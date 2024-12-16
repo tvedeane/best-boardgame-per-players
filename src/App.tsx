@@ -108,7 +108,7 @@ const App: React.FC = () => {
       games.forEach((game) => {
         const fetchedGame = bestPlayerCounts.find((b) => b.id === game.id);
         if (fetchedGame !== undefined) {
-          if (fetchedGame.bestWith !== undefined) {
+          if (fetchedGame.bestWith !== undefined) { // TODO check why sometimes there is undefined 
             game.bestWith = fetchedGame.bestWith;
           }
           if (fetchedGame.recommendedWith !== undefined) {
