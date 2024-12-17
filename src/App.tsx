@@ -156,6 +156,10 @@ const App: React.FC = () => {
     setPlayersRange(newValue as number[]);
   };
 
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(e.target.value);
+  };
+
   const filteredGames = games
     .filter(game => {
       if (pollTypes.length == 0 || pollTypes.length == 2) {
@@ -181,7 +185,7 @@ const App: React.FC = () => {
             id="username"
             placeholder="Enter BGG username and press 'Continue'"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={handleUsernameChange}
           />
         </label>
 
