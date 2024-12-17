@@ -67,15 +67,21 @@ const App: React.FC = () => {
     while (true) {
       const response = await fetch(endpoint);
 
-      if (response.status === 202) {
-        // 202: Request queued, wait and retry
-        console.log("Request queued. Retrying...");
-        await delay(2000); // Delay for 2 seconds before retrying
-        continue;
-      }
+      const MAX_RETRIES = 5;
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch games. Please try again.");
+      let retryCount = 0;
+      while (retryCount < MAX_RETRIES) {
+        if (response.status === 202) {
+          retryCount++;
+          console.log(`Request queued. Retrying (${retryCount}/${MAX_RETRIES})...`);
+          await delay(2000);
+        } else {
+          break;
+        }
+      }
+      
+      if (retryCount === MAX_RETRIES) {
+        throw new Error("Request failed after maximum retries. Try again later.");
       }
 
       // Parse the XML response
