@@ -153,7 +153,7 @@ const App: React.FC = () => {
     setPollTypes(newPollTypes);
   };
 
-  const handlePlayersRangeChange = (_: Event, newValue: number | number[]) => {
+  const handlePlayersRangeChange = (_: React.SyntheticEvent, newValue: number | number[]) => {
     setPlayersRange(newValue as number[]);
   };
 
