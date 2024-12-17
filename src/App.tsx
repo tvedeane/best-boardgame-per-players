@@ -15,6 +15,41 @@ interface PlayersCountDto {
   recommendedWith: number[];
 }
 
+const playerMarks = [
+  {
+    value: 1,
+    label: '1'
+  },
+  {
+    value: 2,
+    label: '2'
+  },
+  {
+    value: 3,
+    label: '3'
+  },
+  {
+    value: 4,
+    label: '4'
+  },
+  {
+    value: 5,
+    label: '5'
+  },
+  {
+    value: 6,
+    label: '6'
+  },
+  {
+    value: 7,
+    label: '7'
+  },
+  {
+    value: 8,
+    label: '8'
+  },
+]
+
 const App: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -22,40 +57,6 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [playersRange, setPlayersRange] = useState([2, 5]);
   const [pollTypes, setPollTypes] = useState(() => ['best', 'recommended']);
-  const playerMarks = [
-    {
-      value: 1,
-      label: '1'
-    },
-    {
-      value: 2,
-      label: '2'
-    },
-    {
-      value: 3,
-      label: '3'
-    },
-    {
-      value: 4,
-      label: '4'
-    },
-    {
-      value: 5,
-      label: '5'
-    },
-    {
-      value: 6,
-      label: '6'
-    },
-    {
-      value: 7,
-      label: '7'
-    },
-    {
-      value: 8,
-      label: '8'
-    },
-  ]
 
   const fetchGames = async (username: string): Promise<Game[]> => {
     const endpoint = `https://boardgamegeek.com/xmlapi2/collection?username=${username}&own=1`;
@@ -89,18 +90,18 @@ const App: React.FC = () => {
       }
 
       const gameNodes = xml.querySelectorAll("item");
-      
-      const games: Game[] = Array.from(gameNodes).map((node) => {
-          const id = node.getAttribute("objectid") || "unknown";
-          const name =
-            node.querySelector("name")?.textContent || "Unknown Game";
 
-          return {
-            id: id,
-            name: name,
-            bestWith: [],
-            recommendedWith: []
-          };
+      const games: Game[] = Array.from(gameNodes).map((node) => {
+        const id = node.getAttribute("objectid") || "unknown";
+        const name =
+          node.querySelector("name")?.textContent || "Unknown Game";
+
+        return {
+          id: id,
+          name: name,
+          bestWith: [],
+          recommendedWith: []
+        };
       });
 
       const bestPlayerCounts = await fetchBestPlayerCounts(games.map((g) => g.id).join(','));
@@ -163,7 +164,7 @@ const App: React.FC = () => {
   const filteredGames = games
     .filter(game => {
       if (pollTypes.length == 0 || pollTypes.length == 2) {
-        return game.bestWith.some(n => n >= playersRange[0] && n <= playersRange[1]) || 
+        return game.bestWith.some(n => n >= playersRange[0] && n <= playersRange[1]) ||
           game.recommendedWith.some(n => n >= playersRange[0] && n <= playersRange[1]);
       } else {
         if (pollTypes.indexOf("best") > -1) {
@@ -173,7 +174,7 @@ const App: React.FC = () => {
         }
       }
     });
-  
+
   return (
     <div className="container">
       <main>
