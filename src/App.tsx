@@ -129,7 +129,7 @@ const App: React.FC = () => {
   };
 
   const fetchBestPlayerCounts = async (gameIds: string): Promise<PlayersCountDto[]> => {
-    const endpoint = `http://localhost:8080/boardgames/${gameIds}`;
+    const endpoint = `https://bgg-proxy.fly.dev/boardgames/${gameIds}`;
     const response = await fetch(endpoint);
     if (!response.ok) {
       throw new Error(`Failed to fetch details for game IDs ${gameIds}`);
