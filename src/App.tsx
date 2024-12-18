@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./App.css";
-import { ToggleButtonGroup, ToggleButton, Slider, Box } from "@mui/material";
+import { Slider, Box } from "@mui/material";
 
 interface Game {
   id: string;
@@ -56,7 +56,7 @@ const App: React.FC = () => {
   const [games, setGames] = useState<Game[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [playersRange, setPlayersRange] = useState([2, 5]);
-  const [pollTypes, setPollTypes] = useState(() => ['best', 'recommended']);
+  const [bestOnly, setBestOnly] = useState(true);
 
   const fetchGames = async (username: string): Promise<Game[]> => {
     const endpoint = `https://boardgamegeek.com/xmlapi2/collection?username=${username}&own=1`;
@@ -79,7 +79,7 @@ const App: React.FC = () => {
           break;
         }
       }
-      
+
       if (retryCount === MAX_RETRIES) {
         throw new Error("Cannot read collection from BGG. Try again later.");
       }
@@ -152,13 +152,6 @@ const App: React.FC = () => {
     }
   };
 
-  const handleBestRecommended = (
-    _: React.MouseEvent<HTMLElement>,
-    newPollTypes: string[],
-  ) => {
-    setPollTypes(newPollTypes);
-  };
-
   const handlePlayersRangeChange = (_: Event, newValue: number | number[]) => {
     setPlayersRange(newValue as number[]);
   };
@@ -169,17 +162,17 @@ const App: React.FC = () => {
 
   const filteredGames = games
     .filter(game => {
-      if (pollTypes.length == 0 || pollTypes.length == 2) {
+      if (!bestOnly) {
         return game.bestWith.some(n => n >= playersRange[0] && n <= playersRange[1]) ||
           game.recommendedWith.some(n => n >= playersRange[0] && n <= playersRange[1]);
       } else {
-        if (pollTypes.indexOf("best") > -1) {
-          return game.bestWith.some(n => n >= playersRange[0] && n <= playersRange[1]);
-        } else {
-          return game.recommendedWith.some(n => n >= playersRange[0] && n <= playersRange[1]);
-        }
+        return game.bestWith.some(n => n >= playersRange[0] && n <= playersRange[1]);
       }
     });
+
+  const toggleBestOnly = () => {
+    setBestOnly(!bestOnly);
+  };
 
   return (
     <div className="container">
@@ -216,13 +209,10 @@ const App: React.FC = () => {
           />
         </Box>
 
-        <ToggleButtonGroup
-          value={pollTypes}
-          onChange={handleBestRecommended}
-        >
-          <ToggleButton value="best">Best</ToggleButton>
-          <ToggleButton value="recommended">Recommended</ToggleButton>
-        </ToggleButtonGroup>
+        <label>
+          <input type="checkbox" name="best-only" defaultChecked onClick={toggleBestOnly}/>
+          Use 'Best' only (ignore 'Recommended')
+        </label>
 
         <div className="mt-6">
           <ul className="space-y-2">
