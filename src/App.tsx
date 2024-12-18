@@ -132,7 +132,7 @@ const App: React.FC = () => {
     const endpoint = `https://bgg-proxy.fly.dev/boardgames/${gameIds}`;
     const response = await fetch(endpoint);
     if (!response.ok) {
-      throw new Error(`Failed to fetch details for game IDs ${gameIds}`);
+      throw new Error(`Failed to fetch player counts. Try again later.`);
     }
 
     return await response.json();
