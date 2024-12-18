@@ -81,7 +81,7 @@ const App: React.FC = () => {
       }
       
       if (retryCount === MAX_RETRIES) {
-        throw new Error("Request failed after maximum retries. Try again later.");
+        throw new Error("Cannot read collection from BGG. Try again later.");
       }
 
       // Parse the XML response
