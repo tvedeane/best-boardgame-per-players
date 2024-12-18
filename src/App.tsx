@@ -174,6 +174,8 @@ const App: React.FC = () => {
     setBestOnly(!bestOnly);
   };
 
+  const shortGameName = (game: Game) => game.name.length > 30 ? game.name.substring(0, 30) + "..." : game.name
+
   return (
     <div className="container">
       <main>
@@ -218,7 +220,7 @@ const App: React.FC = () => {
           <ul className="space-y-2">
             {filteredGames.map((game) => (
               <li key={game.id} className="flex flex-col space-y-2">
-                <h3 className="font-bold"><a href={`https://boardgamegeek.com/boardgame/${game.id}`} target="_blank">{game.name}</a></h3>
+                <h3 className="font-bold"><a href={`https://boardgamegeek.com/boardgame/${game.id}`} target="_blank">{shortGameName(game)}</a></h3>
                 {game.bestWith.length + game.recommendedWith.length > 0 ? (
                   <div>
                     <p className="text-sm text-gray-500">
