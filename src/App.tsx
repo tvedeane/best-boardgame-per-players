@@ -96,6 +96,10 @@ const App: React.FC = () => {
       }
 
       const gameNodes = xml.querySelectorAll("item");
+      if (gameNodes.length == 0) {
+        setError(`Empty collection`);
+        return [];
+      }
 
       const games: Game[] = Array.from(gameNodes).map((node) => {
         const id = node.getAttribute("objectid") || "unknown";
