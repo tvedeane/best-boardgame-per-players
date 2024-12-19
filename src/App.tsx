@@ -202,7 +202,7 @@ const App: React.FC = () => {
 
         {error && <p className="text-red-500 text-center mt-4">{error}</p>}
 
-        <Box sx={{ width: 500, marginLeft: 'auto', marginRight: 'auto' }}>
+        <Box sx={{ width: '90%', maxWidth: 500, marginLeft: 'auto', marginRight: 'auto' }}>
           <Slider
             value={playersRange}
             onChange={handlePlayersRangeChange}
