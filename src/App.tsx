@@ -59,15 +59,15 @@ const App: React.FC = () => {
   const [bestOnly, setBestOnly] = useState(true);
 
   const fetchGames = async (username: string): Promise<Game[]> => {
-    const endpoint = `https://boardgamegeek.com/xmlapi2/collection?username=${username}&own=1`;
+    const ownedGamesEndpoint = `https://boardgamegeek.com/xmlapi2/collection?username=${username}&own=1`;
 
     const delay = (ms: number): Promise<void> =>
       new Promise((resolve) => setTimeout(resolve, ms));
 
     while (true) {
-      const response = await fetch(endpoint);
+      const response = await fetch(ownedGamesEndpoint);
 
-      const MAX_RETRIES = 5;
+      const MAX_RETRIES = 10;
 
       let retryCount = 0;
       while (retryCount < MAX_RETRIES) {
