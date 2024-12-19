@@ -65,7 +65,7 @@ const App: React.FC = () => {
       new Promise((resolve) => setTimeout(resolve, ms));
 
     while (true) {
-      const response = await fetch(ownedGamesEndpoint);
+      let response = await fetch(ownedGamesEndpoint);
 
       const MAX_RETRIES = 10;
 
@@ -78,6 +78,7 @@ const App: React.FC = () => {
         } else {
           break;
         }
+        response = await fetch(ownedGamesEndpoint);
       }
 
       if (retryCount === MAX_RETRIES) {
