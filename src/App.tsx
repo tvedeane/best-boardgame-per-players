@@ -139,6 +139,7 @@ const App: React.FC = () => {
   };
 
   const handleContinue = async (): Promise<void> => {
+    setGames([]);
     setIsLoading(true);
     setError(null);
 
