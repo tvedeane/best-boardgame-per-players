@@ -147,7 +147,12 @@ const App: React.FC = () => {
       const gamesList = await fetchGames(username);
       setGames(gamesList);
     } catch (err) {
-      setError((err as Error).message);
+      const error = err as Error;
+      if (error.message.indexOf("NetworkError") > -1) {
+        setError(`Wrong username?`);
+      } else {
+        setError(error.message);
+      }
     } finally {
       setIsLoading(false);
     }
