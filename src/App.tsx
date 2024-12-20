@@ -239,8 +239,8 @@ const App: React.FC = () => {
                 <h3 className="font-bold"><a href={`https://boardgamegeek.com/boardgame/${game.id}`} target="_blank">{shortGameName(game)}</a></h3>
                 {game.bestWith.length + game.recommendedWith.length > 0 ? (
                   <div>
-                    <p className="text-sm text-gray-500">
-                      Best: {game.bestWith.join(', ')} | Recommended: {game.recommendedWith.join(', ')}
+                    <p className="text-sm text-gray-500 text-nowrap">
+                      {`Best: ${game.bestWith.join(', ')} | Recommended: ${game.recommendedWith.join(', ')}`}
                     </p>
                   </div>
                 ) : (
