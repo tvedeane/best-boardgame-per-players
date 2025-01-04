@@ -50,6 +50,8 @@ const playerMarks = [
   },
 ]
 
+const BGG_PROXY_URL = import.meta.env.VITE_BGG_PROXY_URL;
+
 const App: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -134,7 +136,7 @@ const App: React.FC = () => {
   };
 
   const fetchBestPlayerCounts = async (gameIds: string): Promise<PlayersCountDto[]> => {
-    const endpoint = `https://bgg-proxy.fly.dev/boardgames/${gameIds}`;
+    const endpoint = `${BGG_PROXY_URL}/boardgames/${gameIds}`;
     const response = await fetch(endpoint);
     if (!response.ok) {
       throw new Error(`Failed to fetch player counts. Try again later.`);
