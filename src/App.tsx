@@ -60,13 +60,12 @@ const App: React.FC = () => {
   const [playersRange, setPlayersRange] = useState([2, 5]);
   const [bestOnly, setBestOnly] = useState(true);
 
-  const fetchGames = async (username: string): Promise<Game[]> => {
+  const fetchGames = async (username: string) => {
     const ownedGamesEndpoint = `https://boardgamegeek.com/xmlapi2/collection?username=${username}&own=1`;
 
     const delay = (ms: number): Promise<void> =>
       new Promise((resolve) => setTimeout(resolve, ms));
 
-    while (true) {
       let response = await fetch(ownedGamesEndpoint);
 
       const MAX_RETRIES = 10;
@@ -101,7 +100,7 @@ const App: React.FC = () => {
       const gameNodes = xml.querySelectorAll("item");
       if (gameNodes.length == 0) {
         setError(`Empty collection`);
-        return [];
+        setGames([]);
       }
 
       const games: Game[] = Array.from(gameNodes).map((node) => {
@@ -117,32 +116,55 @@ const App: React.FC = () => {
         };
       });
 
-      const bestPlayerCounts = await fetchBestPlayerCounts(games.map((g) => g.id).join(','));
-
-      games.forEach((game) => {
-        const fetchedGame = bestPlayerCounts.find((b) => b.id === game.id);
-        if (fetchedGame !== undefined) {
-          if (fetchedGame.bestWith !== undefined) { // TODO check why sometimes there is undefined 
-            game.bestWith = fetchedGame.bestWith;
-          }
-          if (fetchedGame.recommendedWith !== undefined) {
-            game.recommendedWith = fetchedGame.recommendedWith;
-          }
-        }
-      });
-
-      return games;
-    }
+      setGames(games);
+      await fetchBestPlayerCounts(games.map((g) => g.id).join(','));
   };
 
-  const fetchBestPlayerCounts = async (gameIds: string): Promise<PlayersCountDto[]> => {
-    const endpoint = `${BGG_PROXY_URL}/boardgames/${gameIds}`;
-    const response = await fetch(endpoint);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch player counts. Try again later.`);
-    }
+  const fetchBestPlayerCounts = async (gameIds: string) => {
+    try {
+      const endpoint = `${BGG_PROXY_URL}/boardgames/stream/${gameIds}`;
+      const response = await fetch(endpoint);
+      if (!response.ok || !response.body) {
+        throw new Error(`Failed to fetch player counts. Try again later.`);
+      }
 
-    return await response.json();
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+
+        for (let i = 0; i < lines.length - 1; i++) {
+          const line = lines[i];
+          if (line.trim()) {
+            const data: PlayersCountDto = JSON.parse(line);
+
+            setGames((prevGames) =>
+              prevGames.map((game) =>
+                game.id === data.id
+                  ? {
+                      ...game,
+                      bestWith: data.bestWith ?? game.bestWith,
+                      recommendedWith: data.recommendedWith ?? game.recommendedWith,
+                    }
+                  : game
+              )
+            );
+          }
+        }
+
+        // Keep the last line as a partial buffer for next iteration
+        buffer = lines[lines.length - 1];
+      }
+    } catch (err) {
+      console.error('Streaming error:', err);
+      setError('Failed to stream updates.');
+    }
   };
 
   const handleContinue = async (): Promise<void> => {
@@ -151,8 +173,7 @@ const App: React.FC = () => {
     setError(null);
 
     try {
-      const gamesList = await fetchGames(username);
-      setGames(gamesList);
+      await fetchGames(username);
     } catch (err) {
       const error = err as Error;
       if (error.message.indexOf("NetworkError") > -1) {
