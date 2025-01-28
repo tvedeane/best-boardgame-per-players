@@ -115,14 +115,20 @@ const App: React.FC = () => {
       });
 
       setGames(games);
-      await fetchBestPlayerCounts(games.map((g) => g.id).join(','));
+      await fetchBestPlayerCounts(games.map((g) => g.id));
   };
 
-  const fetchBestPlayerCounts = async (gameIds: string) => {
+  const fetchBestPlayerCounts = async (gameIds: string[]) => {
     try {
-      // local development: const endpoint = `http://localhost:8080/boardgames/stream/${gameIds}`;
-      const endpoint = `https://bgg-proxy.fly.dev/boardgames/stream/${gameIds}`;
-      const response = await fetch(endpoint);
+      // local development: const endpoint = `http://localhost:8080/boardgames/stream`;
+      const endpoint = `https://bgg-proxy.fly.dev/boardgames/stream`;
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids: gameIds }),
+      });
       if (!response.ok || !response.body) {
         throw new Error(`Failed to fetch player counts. Try again later.`);
       }

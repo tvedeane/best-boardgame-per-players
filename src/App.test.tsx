@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import '@testing-library/jest-dom';
 import App from "./App";
 
 describe("App component", () => {
@@ -45,13 +46,21 @@ describe("App component", () => {
         status: 200,
         text: () => Promise.resolve(mockCollection),
       })
-    ).mockImplementationOnce(() =>
-      Promise.resolve({
+    ).mockImplementationOnce((url, options) => {
+      expect(url).toBe('https://bgg-proxy.fly.dev/boardgames/stream');
+      expect(options.method).toBe('POST');
+      expect(options.headers).toEqual({
+        'Content-Type': 'application/json',
+      });
+      expect(JSON.parse(options.body)).toEqual({ ids: ["111775"] });
+
+      // fix this test - it doesn't work with streaming
+      return Promise.resolve({
         ok: true,
         status: 200,
-        json: () => Promise.resolve([{"id":"111775", "bestWith":[3,4], "recommendedWith":[3,4,5]}]),
-      })
-    );
+        json: () => Promise.resolve([{ "id": "111775", "bestWith": [3, 4], "recommendedWith": [3, 4, 5] }]),
+      });
+    });
 
     render(<App />);
 
