@@ -3,7 +3,14 @@
     <head>
         <meta
             charset="UTF-8"
-            http-equiv="Content-Security-Policy" content="script-src 'self'"
+            http-equiv="Content-Security-Policy"
+            content="default-src 'self'; 
+                     script-src 'self'; 
+                     object-src 'none'; 
+                     style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; 
+                     font-src 'self' https://cdn.jsdelivr.net; 
+                     connect-src 'self' https://boardgamegeek.com https://bgg-proxy.fly.dev;
+                     img-src 'self' data:;"
         />
         <link
             rel="stylesheet"
