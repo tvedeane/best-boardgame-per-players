@@ -114,7 +114,7 @@ const App: React.FC = () => {
         };
       });
 
-      setGames(games);
+      setGames(getUniqueObjects(games, 'id'));
       await fetchBestPlayerCounts(games.map((g) => g.id));
   };
 
@@ -168,7 +168,7 @@ const App: React.FC = () => {
       }
     } catch (err) {
       console.error('Streaming error:', err);
-      setError('Failed to stream updates.');
+      setError('Failed to stream updates. Please retry.');
     }
   };
 
@@ -198,6 +198,19 @@ const App: React.FC = () => {
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
   };
+
+  const getUniqueObjects = (array: Game[], key: keyof Game): Game[] => {
+    const seen = new Set();
+    return array.filter(item => {
+      const value = item[key];
+      if (seen.has(value)) {
+        return false;
+      } else {
+        seen.add(value);
+        return true;
+      }
+    });
+  }
 
   const filteredGames = games
     .filter(game => {
